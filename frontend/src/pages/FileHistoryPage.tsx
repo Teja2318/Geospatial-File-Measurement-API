@@ -16,7 +16,6 @@ import {
 import { useFiles, useDeleteFile } from '@/hooks/useApi';
 import { usePreferences } from '@/hooks/usePreferences';
 import {
-  Card,
   StatusBadge,
   ConfirmDialog,
   LoadingSpinner,
@@ -77,18 +76,18 @@ export function FileHistoryPage() {
   };
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
+    <div className="page-wrapper space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-        <div>
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider inline-flex items-center gap-1.5 mb-2">
-            <FolderOpen className="w-3 h-3 text-cyan-400" />
+      <div className="page-header-row mb-0">
+        <div className="page-title-group">
+          <span className="page-badge-tag">
+            <FolderOpen className="w-3 h-3" />
             Repository Vault
           </span>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+          <h1 className="page-main-title">
             Geospatial File History
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="page-subtitle">
             Browse, inspect, export, or manage your ingested vector datasets
           </p>
         </div>
@@ -96,7 +95,7 @@ export function FileHistoryPage() {
         <button
           onClick={() => refetch()}
           disabled={isRefetching}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-700 bg-slate-900/80 text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-800 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-700/80 bg-slate-900/80 text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-800 transition-colors shadow-sm cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isRefetching ? 'animate-spin' : ''}`} />
           Refresh Records
@@ -104,16 +103,16 @@ export function FileHistoryPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <Card className="p-4 bg-slate-900/80">
+      <div className="filter-search-box">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <div className="search-input-wrapper md:w-80">
+            <Search className="search-icon" />
             <input
               type="text"
               placeholder="Search by dataset name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-700/80 bg-slate-950/80 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner"
+              className="form-input-custom"
             />
           </div>
 
@@ -123,7 +122,7 @@ export function FileHistoryPage() {
               <select
                 value={selectedFormat}
                 onChange={(e) => setSelectedFormat(e.target.value)}
-                className="text-xs px-3 py-2 rounded-xl border border-slate-700 bg-slate-950 text-slate-200 focus:outline-none focus:border-cyan-400"
+                className="form-select-custom"
               >
                 <option value="ALL">All Formats</option>
                 <option value="KML">KML</option>
@@ -136,7 +135,7 @@ export function FileHistoryPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="text-xs px-3 py-2 rounded-xl border border-slate-700 bg-slate-950 text-slate-200 focus:outline-none focus:border-cyan-400"
+                className="form-select-custom"
               >
                 <option value="ALL">All Statuses</option>
                 <option value="COMPLETED">Completed</option>
@@ -146,7 +145,7 @@ export function FileHistoryPage() {
             </div>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Files Table */}
       {isLoading ? (
@@ -154,13 +153,13 @@ export function FileHistoryPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : error ? (
-        <Card className="text-center py-12 text-rose-400 border-rose-900/50 bg-rose-950/20">
+        <div className="geo-table-shell p-12 text-center text-rose-400">
           <AlertCircle className="w-10 h-10 mx-auto mb-3" />
           <p className="font-bold">Error Loading Records</p>
           <p className="text-xs text-slate-400 mt-1">{(error as Error).message}</p>
-        </Card>
+        </div>
       ) : files.length === 0 ? (
-        <Card>
+        <div className="geo-table-shell p-8">
           <EmptyState
             icon={<FileSpreadsheet className="w-8 h-8" />}
             title="No datasets available"
@@ -168,15 +167,15 @@ export function FileHistoryPage() {
             action={
               <Link
                 to="/upload"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold hover:opacity-90 shadow-lg"
+                className="btn-upload-primary mt-2"
               >
                 Upload Dataset
               </Link>
             }
           />
-        </Card>
+        </div>
       ) : filteredFiles.length === 0 ? (
-        <Card>
+        <div className="geo-table-shell p-8">
           <EmptyState
             icon={<Filter className="w-8 h-8" />}
             title="No matching records"
@@ -188,42 +187,39 @@ export function FileHistoryPage() {
                   setSelectedFormat('ALL');
                   setSelectedStatus('ALL');
                 }}
-                className="px-4 py-2 rounded-xl border border-slate-700 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800"
+                className="px-4 py-2 rounded-xl border border-slate-700 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 cursor-pointer mt-2"
               >
                 Reset Filters
               </button>
             }
           />
-        </Card>
+        </div>
       ) : (
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl overflow-hidden shadow-2xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-950/60 border-b border-slate-800/80 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+        <div className="geo-table-shell">
+          <div className="table-responsive-wrapper">
+            <table className="geo-table">
+              <thead>
                 <tr>
-                  <th className="px-5 py-3.5">Filename</th>
-                  <th className="px-5 py-3.5">Format</th>
-                  <th className="px-5 py-3.5">Size</th>
-                  <th className="px-5 py-3.5">Features</th>
-                  <th className="px-5 py-3.5">Total Area</th>
-                  <th className="px-5 py-3.5">Total Length</th>
-                  <th className="px-5 py-3.5">Uploaded</th>
-                  <th className="px-5 py-3.5">Status</th>
-                  <th className="px-5 py-3.5 text-right">Actions</th>
+                  <th>Filename</th>
+                  <th>Format</th>
+                  <th>Size</th>
+                  <th>Features</th>
+                  <th>Total Area</th>
+                  <th>Total Length</th>
+                  <th>Uploaded</th>
+                  <th>Status</th>
+                  <th className="text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody>
                 {filteredFiles.map((file) => (
-                  <tr
-                    key={file.id}
-                    className="hover:bg-slate-800/30 transition-colors group"
-                  >
-                    <td className="px-5 py-4 font-medium text-slate-100">
+                  <tr key={file.id}>
+                    <td>
                       <Link
                         to={`/files/${file.id}`}
-                        className="hover:text-cyan-400 flex items-center gap-3 transition-colors"
+                        className="file-cell-group"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0">
+                        <div className="file-format-avatar">
                           {file.format === 'KML' ? (
                             <FileCode className="w-4 h-4 text-cyan-400" />
                           ) : (
@@ -231,7 +227,7 @@ export function FileHistoryPage() {
                           )}
                         </div>
                         <div>
-                          <div className="truncate max-w-[200px] font-semibold text-sm text-slate-100 group-hover:text-cyan-300">
+                          <div className="file-name-title">
                             {file.filename}
                           </div>
                           {file.error_message && (
@@ -242,36 +238,34 @@ export function FileHistoryPage() {
                         </div>
                       </Link>
                     </td>
-                    <td className="px-5 py-4">
+                    <td>
                       <span
-                        className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${
-                          file.format === 'KML'
-                            ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
-                            : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                        className={`format-pill ${
+                          file.format === 'KML' ? 'format-pill-kml' : 'format-pill-shapefile'
                         }`}
                       >
                         {file.format}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-slate-400 text-xs font-mono">
+                    <td className="text-slate-400 text-xs font-mono">
                       {formatFileSize(file.file_size_bytes)}
                     </td>
-                    <td className="px-5 py-4 font-bold text-slate-200">
+                    <td className="font-bold text-white">
                       {file.feature_count ?? '—'}
                     </td>
-                    <td className="px-5 py-4 text-slate-300 text-xs font-medium">
+                    <td className="text-slate-300 text-xs font-semibold">
                       {formatArea(file.total_area_sq_m, preferences.areaUnit)}
                     </td>
-                    <td className="px-5 py-4 text-slate-300 text-xs font-medium">
+                    <td className="text-slate-300 text-xs font-semibold">
                       {formatLength(file.total_length_m, preferences.lengthUnit)}
                     </td>
-                    <td className="px-5 py-4 text-slate-400 text-xs">
+                    <td className="text-slate-400 text-xs">
                       {formatDate(file.upload_timestamp)}
                     </td>
-                    <td className="px-5 py-4">
+                    <td>
                       <StatusBadge status={file.status} />
                     </td>
-                    <td className="px-5 py-4 text-right">
+                    <td className="text-right">
                       <div className="inline-flex items-center gap-1.5">
                         <Link
                           to={`/files/${file.id}`}
@@ -285,7 +279,7 @@ export function FileHistoryPage() {
                           <button
                             onClick={() => handleExport(file, 'csv')}
                             disabled={exportingId === `${file.id}-csv`}
-                            className="p-2 rounded-xl border border-slate-700/80 bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-all shadow-sm"
+                            className="p-2 rounded-xl border border-slate-700/80 bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-all shadow-sm cursor-pointer"
                             title="Export CSV"
                           >
                             <Download className="w-3.5 h-3.5" />
@@ -294,7 +288,7 @@ export function FileHistoryPage() {
 
                         <button
                           onClick={() => setFileToDelete(file)}
-                          className="p-2 rounded-xl border border-slate-700/80 bg-slate-800/80 text-rose-400 hover:bg-rose-950/60 hover:border-rose-800 transition-all shadow-sm"
+                          className="p-2 rounded-xl border border-slate-700/80 bg-slate-800/80 text-rose-400 hover:bg-rose-950/60 hover:border-rose-800 transition-all shadow-sm cursor-pointer"
                           title="Delete Dataset"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

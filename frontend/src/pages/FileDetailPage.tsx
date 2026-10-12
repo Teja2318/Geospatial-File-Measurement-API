@@ -22,7 +22,6 @@ import { useFile, useMeasurements, useGeoJSON, useDeleteFile } from '@/hooks/use
 import { usePreferences } from '@/hooks/usePreferences';
 import { MapView } from '@/components/map/MapView';
 import {
-  Card,
   StatusBadge,
   ConfirmDialog,
   LoadingSpinner,
@@ -126,7 +125,7 @@ export function FileDetailPage() {
   }
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
+    <div className="page-wrapper space-y-8">
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2 text-xs text-slate-400">
         <Link to="/files" className="hover:text-cyan-400 transition-colors flex items-center gap-1">
@@ -227,76 +226,84 @@ export function FileDetailPage() {
       )}
 
       {/* Metric Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <Card className="relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+      <div className="metric-grid-4">
+        <div className="metric-card-wrapper">
+          <div className="metric-header">
+            <span className="metric-label-title">
               Features
             </span>
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-purple">
               <Layers className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">
-            {file.feature_count ?? 0}
+          <div>
+            <div className="metric-value-number">
+              {file.feature_count ?? 0}
+            </div>
+            <div className="metric-subtext truncate">
+              {summary ? `${summary.polygon_count} Poly, ${summary.line_count} Line, ${summary.point_count} Point` : 'Geometries Analyzed'}
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1 truncate">
-            {summary ? `${summary.polygon_count} Poly, ${summary.line_count} Line, ${summary.point_count} Point` : 'Geometries Analyzed'}
-          </div>
-        </Card>
+        </div>
 
-        <Card className="relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="metric-card-wrapper">
+          <div className="metric-header">
+            <span className="metric-label-title">
               Total Surface Area
             </span>
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-emerald">
               <Maximize2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-cyan-400 tracking-tight">
-            {formatArea(file.total_area_sq_m, preferences.areaUnit)}
+          <div>
+            <div className="metric-value-number text-cyan-400">
+              {formatArea(file.total_area_sq_m, preferences.areaUnit)}
+            </div>
+            <div className="metric-subtext">
+              <span>Local UTM Projected SI</span>
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1">
-            Local UTM Projected SI
-          </div>
-        </Card>
+        </div>
 
-        <Card className="relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="metric-card-wrapper">
+          <div className="metric-header">
+            <span className="metric-label-title">
               Total Length
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-amber">
               <Ruler className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-amber-400 tracking-tight">
-            {formatLength(file.total_length_m, preferences.lengthUnit)}
+          <div>
+            <div className="metric-value-number text-amber-400">
+              {formatLength(file.total_length_m, preferences.lengthUnit)}
+            </div>
+            <div className="metric-subtext">
+              <span>Curvilinear Geodesic Path</span>
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1">
-            Curvilinear Geodesic Path
-          </div>
-        </Card>
+        </div>
 
-        <Card className="relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="metric-card-wrapper">
+          <div className="metric-header">
+            <span className="metric-label-title">
               Measurement Success
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-emerald">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-emerald-400 tracking-tight">
-            {summary && summary.total_features > 0
-              ? `${Math.round((summary.completed_count / summary.total_features) * 100)}%`
-              : '100%'}
+          <div>
+            <div className="metric-value-number text-emerald-400">
+              {summary && summary.total_features > 0
+                ? `${Math.round((summary.completed_count / summary.total_features) * 100)}%`
+                : '100%'}
+            </div>
+            <div className="metric-subtext">
+              <span>{summary?.completed_count ?? 0} features measured</span>
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1">
-            {summary?.completed_count ?? 0} features measured
-          </div>
-        </Card>
+        </div>
       </div>
 
       {/* Main Interactive Map & Table */}
@@ -355,13 +362,13 @@ export function FileDetailPage() {
 
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Filter feature attributes..."
                   value={featureSearch}
                   onChange={(e) => setFeatureSearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-700 bg-slate-950 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400"
+                  className="pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-700 bg-slate-950 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 w-56 md:w-64"
                 />
               </div>
 

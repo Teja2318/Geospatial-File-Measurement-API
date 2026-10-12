@@ -8,7 +8,7 @@ import {
 import L from 'leaflet';
 import type { GeoJSONFeatureCollection, AreaUnit, LengthUnit } from '@/types/api';
 import { formatArea, formatLength } from '@/lib/utils';
-import { Layers, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 interface MapViewProps {
   data: GeoJSONFeatureCollection | null;
@@ -80,8 +80,7 @@ export function MapView({
   lengthUnit,
   className,
 }: MapViewProps) {
-  const [tileIndex, setTileIndex] = useState(0); // Default to Dark Matter!
-  const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const [tileIndex, setTileIndex] = useState(0); // Default to Esri Dark Canvas!
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
 
   const styleFeature = (feature: any) => {
@@ -228,38 +227,22 @@ export function MapView({
         )}
       </MapContainer>
 
-      {/* Floating Layer Switcher Controls */}
-      <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
-        <div className="relative">
+      {/* Floating Segmented Basemap Switcher */}
+      <div className="absolute top-4 right-4 z-[1000] flex items-center p-1 bg-slate-950/85 backdrop-blur-xl border border-slate-700/80 rounded-xl shadow-2xl space-x-1">
+        {TILE_PROVIDERS.map((provider, idx) => (
           <button
-            onClick={() => setShowLayerMenu(!showLayerMenu)}
-            className="px-3.5 py-2 bg-slate-900/90 backdrop-blur-xl border border-slate-700/80 rounded-xl shadow-2xl hover:bg-slate-800 text-white transition-all flex items-center gap-2 text-xs font-semibold"
-            title="Switch Basemap"
+            key={provider.name}
+            type="button"
+            onClick={() => setTileIndex(idx)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+              tileIndex === idx
+                ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md shadow-cyan-500/25'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+            }`}
           >
-            <Layers className="w-4 h-4 text-cyan-400" />
-            <span>{activeTile.name}</span>
+            {provider.name}
           </button>
-
-          {showLayerMenu && (
-            <div className="absolute right-0 mt-2 py-1.5 w-52 bg-slate-900/95 backdrop-blur-2xl border border-slate-700 rounded-xl shadow-2xl text-xs z-[1001] space-y-0.5">
-              {TILE_PROVIDERS.map((provider, idx) => (
-                <button
-                  key={provider.name}
-                  onClick={() => {
-                    setTileIndex(idx);
-                    setShowLayerMenu(false);
-                  }}
-                  className={`w-full text-left px-3.5 py-2.5 hover:bg-slate-800/80 flex items-center justify-between transition-colors ${
-                    idx === tileIndex ? 'font-bold text-cyan-400 bg-cyan-500/10' : 'text-slate-300'
-                  }`}
-                >
-                  {provider.name}
-                  {idx === tileIndex && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#38bdf8]" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        ))}
       </div>
 
       {/* Floating Legend */}

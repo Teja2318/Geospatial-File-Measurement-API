@@ -11,7 +11,6 @@ import {
   FileCode,
   FileArchive,
   Compass,
-  Sparkles,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -27,7 +26,7 @@ import {
 } from 'recharts';
 import { useFiles, useHealth } from '@/hooks/useApi';
 import { usePreferences } from '@/hooks/usePreferences';
-import { Card, StatusBadge, LoadingSpinner, EmptyState } from '@/components/ui/components';
+import { LoadingSpinner, EmptyState } from '@/components/ui/components';
 import { formatArea, formatLength, formatFileSize, formatDateShort } from '@/lib/utils';
 
 export function Dashboard() {
@@ -62,9 +61,9 @@ export function Dashboard() {
   const totalGeomItems = Object.values(geomCountMap).reduce((a, b) => a + b, 0);
 
   const geomChartData = [
-    { name: 'Polygon', value: geomCountMap.Polygon, color: '#38bdf8', label: 'Polygons' },
-    { name: 'LineString', value: geomCountMap.LineString, color: '#818cf8', label: 'Lines' },
-    { name: 'Point', value: geomCountMap.Point, color: '#34d399', label: 'Points' },
+    { name: 'Polygon', value: geomCountMap.Polygon, color: '#38bdf8', label: 'Polygon' },
+    { name: 'LineString', value: geomCountMap.LineString, color: '#f43f5e', label: 'LineString' },
+    { name: 'Point', value: geomCountMap.Point, color: '#34d399', label: 'Point' },
   ].filter((d) => d.value > 0);
 
   // Format distribution
@@ -74,296 +73,312 @@ export function Dashboard() {
   };
 
   const formatChartData = [
-    { name: 'KML', count: formatCounts.KML, fill: '#38bdf8' },
-    { name: 'Shapefile', count: formatCounts.Shapefile, fill: '#818cf8' },
+    { name: 'KML', count: formatCounts.KML },
+    { name: 'Shapefile', count: formatCounts.Shapefile },
   ];
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
+    <div className="page-wrapper">
       {/* Top Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 pb-2">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-cyan-400" />
-              Real-Time GIS Engine
-            </span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-            Geospatial Intelligence Platform
+      <div className="page-header-row">
+        <div className="page-title-group">
+          <h1 className="page-main-title">
+            Geospatial Intelligence Dashboard
           </h1>
-          <p className="text-sm text-slate-400">
-            Automated geodesic metric extraction and boundary visualization for KML & Shapefiles
+          <p className="page-subtitle">
+            Analyze, measure, and visualize KML and Shapefile vector geometries
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Health Indicator */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-medium text-slate-300 shadow-inner">
+        <div className="header-actions-group">
+          {/* Health Status Indicator */}
+          <div className="status-pill-healthy">
             <span
-              className={`w-2 h-2 rounded-full ${
-                isHealthError ? 'bg-rose-500 animate-ping' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
-              }`}
+              className={`dot-indicator ${isHealthError ? 'offline' : ''}`}
             />
-            <span>{isHealthError ? 'API Offline' : `API: ${healthData?.status || 'Online'}`}</span>
+            <span>{isHealthError ? 'API: offline' : `API: ${healthData?.status || 'healthy'}`}</span>
           </div>
 
           <Link
             to="/upload"
-            className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 hover:shadow-cyan-500/30 transition-all duration-300 transform hover:-translate-y-0.5"
+            className="btn-upload-primary"
           >
-            <Upload className="w-4 h-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
-            Upload Dataset
+            <Upload className="w-4 h-4" />
+            Upload File
           </Link>
         </div>
       </div>
 
       {/* Metrics Row (4 Cards) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1 */}
-        <Card className="relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors" />
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+      <div className="metric-grid-4">
+        {/* Metric 1: Files Processed */}
+        <div className="metric-card-wrapper">
+          <div className="metric-card-glow bg-blue-500" />
+          <div className="metric-header">
+            <span className="metric-label-title">
               Files Processed
             </span>
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-blue">
               <Files className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">
-            {isLoading ? '...' : totalFiles}
+          <div>
+            <div className="metric-value-number">
+              {isLoading ? '...' : totalFiles}
+            </div>
+            <div className="metric-subtext">
+              <span>Ingested Vector Datasets</span>
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <span>Ingested Vector Datasets</span>
-          </div>
-        </Card>
+        </div>
 
-        {/* Metric 2 */}
-        <Card className="relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors" />
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        {/* Metric 2: Total Features */}
+        <div className="metric-card-wrapper">
+          <div className="metric-card-glow bg-purple-500" />
+          <div className="metric-header">
+            <span className="metric-label-title">
               Total Features
             </span>
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-purple">
               <Layers className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">
-            {isLoading ? '...' : totalFeatures.toLocaleString()}
+          <div>
+            <div className="metric-value-number">
+              {isLoading ? '...' : totalFeatures.toLocaleString()}
+            </div>
+            <div className="metric-subtext">
+              <span>Geometries Analyzed</span>
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <span>Geometries Analyzed</span>
-          </div>
-        </Card>
+        </div>
 
-        {/* Metric 3 */}
-        <Card className="relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors" />
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        {/* Metric 3: Total Surface Area */}
+        <div className="metric-card-wrapper">
+          <div className="metric-card-glow bg-emerald-500" />
+          <div className="metric-header">
+            <span className="metric-label-title">
               Total Surface Area
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-emerald">
               <Maximize2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">
-            {isLoading ? '...' : formatArea(totalArea, preferences.areaUnit)}
+          <div>
+            <div className="metric-value-number">
+              {isLoading ? '...' : formatArea(totalArea, preferences.areaUnit)}
+            </div>
+            <div className="metric-subtext">
+              <span>Projected UTM Geodesy</span>
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <span>Projected UTM Geodesy</span>
-          </div>
-        </Card>
+        </div>
 
-        {/* Metric 4 */}
-        <Card className="relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors" />
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        {/* Metric 4: Total Length */}
+        <div className="metric-card-wrapper">
+          <div className="metric-card-glow bg-amber-500" />
+          <div className="metric-header">
+            <span className="metric-label-title">
               Total Length
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+            <div className="metric-icon-box icon-box-amber">
               <Ruler className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">
-            {isLoading ? '...' : formatLength(totalLength, preferences.lengthUnit)}
+          <div>
+            <div className="metric-value-number">
+              {isLoading ? '...' : formatLength(totalLength, preferences.lengthUnit)}
+            </div>
+            <div className="metric-subtext">
+              <span>Linear Paths & Perimeters</span>
+            </div>
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <span>Linear Geometries & Paths</span>
-          </div>
-        </Card>
+        </div>
       </div>
 
       {/* Analytics Visualizations */}
       {files.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Donut Chart Card */}
-          <Card className="space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800/60">
-              <div className="flex items-center gap-2">
+        <div className="analytics-grid-2">
+          {/* Geometry Breakdown Donut Chart */}
+          <div className="analytics-card-container">
+            <div className="analytics-card-header">
+              <div className="analytics-title-group">
                 <Compass className="w-4 h-4 text-cyan-400" />
-                <h3 className="text-sm font-bold text-white tracking-wide">
-                  Geometry Distribution
+                <h3 className="analytics-card-title">
+                  Geometry Type Breakdown
                 </h3>
               </div>
-              <span className="text-xs text-slate-400 font-medium">
-                {totalGeomItems} Total Layer Instances
+              <span className="analytics-count-pill">
+                {totalGeomItems} Instances
               </span>
             </div>
 
-            {geomChartData.length > 0 ? (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
-                <div className="h-56 w-56 relative shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={geomChartData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={55}
-                        outerRadius={80}
-                        paddingAngle={5}
-                        cornerRadius={4}
-                      >
-                        {geomChartData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={entry.color}
-                            stroke="#0f172a"
-                            strokeWidth={2}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#0f172a',
-                          borderColor: '#334155',
-                          borderRadius: '0.75rem',
-                          color: '#f8fafc',
-                          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  {/* Centered label inside Donut */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-2xl font-black text-white">{totalFeatures}</span>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Features</span>
+            <div className="chart-content-box">
+              {geomChartData.length > 0 ? (
+                <div className="donut-chart-flex">
+                  <div className="donut-visual-container">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={geomChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={52}
+                          outerRadius={78}
+                          paddingAngle={4}
+                          cornerRadius={4}
+                        >
+                          {geomChartData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={entry.color}
+                              stroke="#0b1120"
+                              strokeWidth={3}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#0c1322',
+                            borderColor: '#334155',
+                            borderRadius: '0.75rem',
+                            color: '#f8fafc',
+                            fontSize: '12px',
+                            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.6)',
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="donut-center-kpi">
+                      <span className="donut-kpi-value">{totalFeatures}</span>
+                      <span className="donut-kpi-label">Features</span>
+                    </div>
+                  </div>
+
+                  {/* Clean Legend */}
+                  <div className="donut-legend-stack">
+                    {geomChartData.map((item) => {
+                      const pct = totalGeomItems > 0 ? Math.round((item.value / totalGeomItems) * 100) : 0;
+                      return (
+                        <div key={item.name} className="donut-legend-row">
+                          <div className="legend-label-group">
+                            <span
+                              className="legend-color-dot"
+                              style={{ backgroundColor: item.color }}
+                            />
+                            <span className="legend-name-text">{item.label}</span>
+                          </div>
+                          <div className="legend-value-group">
+                            <span className="legend-count-num">{item.value}</span>
+                            <span className="legend-percent-tag">{pct}%</span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-
-                {/* Modern Legend */}
-                <div className="flex-1 space-y-3 w-full">
-                  {geomChartData.map((item) => {
-                    const pct = totalGeomItems > 0 ? Math.round((item.value / totalGeomItems) * 100) : 0;
-                    return (
-                      <div
-                        key={item.name}
-                        className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800/80 flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span
-                            className="w-3 h-3 rounded-full shrink-0 shadow-sm"
-                            style={{ backgroundColor: item.color }}
-                          />
-                          <span className="text-xs font-semibold text-slate-200">{item.label}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs font-bold text-white">{item.value}</span>
-                          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                            {pct}%
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+              ) : (
+                <div className="flex flex-1 items-center justify-center text-xs text-slate-400">
+                  No geometry distribution available
                 </div>
-              </div>
-            ) : (
-              <div className="h-56 flex items-center justify-center text-xs text-slate-400">
-                No geometry breakdown data available
-              </div>
-            )}
-          </Card>
+              )}
+            </div>
+          </div>
 
-          {/* Bar Chart Card */}
-          <Card className="space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800/60">
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-indigo-400" />
-                <h3 className="text-sm font-bold text-white tracking-wide">
+          {/* Format Distribution Bar Chart */}
+          <div className="analytics-card-container">
+            <div className="analytics-card-header">
+              <div className="analytics-title-group">
+                <Activity className="w-4 h-4 text-blue-400" />
+                <h3 className="analytics-card-title">
                   Format Distribution
                 </h3>
               </div>
-              <span className="text-xs text-slate-400 font-medium">
-                {files.length} Datasets Total
+              <span className="analytics-count-pill">
+                {files.length} Datasets
               </span>
             </div>
 
-            <div className="h-56 w-full pt-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={formatChartData} margin={{ top: 15, right: 20, left: -20, bottom: 5 }}>
+            <div className="chart-content-box">
+              <ResponsiveContainer width="100%" height={210}>
+                <BarChart data={formatChartData} margin={{ top: 15, right: 25, left: -20, bottom: 5 }}>
                   <defs>
-                    <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0.6} />
+                    <linearGradient id="barBlueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.95} />
+                      <stop offset="100%" stopColor="#2563eb" stopOpacity={0.8} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.25} />
-                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
-                  <YAxis stroke="#94a3b8" fontSize={12} allowDecimals={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.6} vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#64748b"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={{ stroke: '#334155' }}
+                  />
+                  <YAxis
+                    stroke="#64748b"
+                    fontSize={12}
+                    allowDecimals={false}
+                    tickLine={false}
+                    axisLine={false}
+                  />
                   <Tooltip
+                    cursor={{ fill: 'rgba(56, 189, 248, 0.05)' }}
                     contentStyle={{
-                      backgroundColor: '#0f172a',
+                      backgroundColor: '#0c1322',
                       borderColor: '#334155',
                       borderRadius: '0.75rem',
                       color: '#f8fafc',
-                      boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
+                      fontSize: '12px',
+                      boxShadow: '0 10px 25px -5px rgba(0,0,0,0.6)',
                     }}
                   />
-                  <Bar dataKey="count" fill="url(#barGradient)" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                  <Bar
+                    dataKey="count"
+                    fill="url(#barBlueGradient)"
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={52}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* Recent Files Table Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-white">Recent Geospatial Files</h2>
-            <p className="text-xs text-slate-400">Processed datasets and measurement status</p>
+      <div className="mt-8">
+        <div className="recent-section-header">
+          <div className="recent-title-group">
+            <h2>Recent Files</h2>
+            <p>Processed datasets and measurement status</p>
           </div>
           {files.length > 0 && (
             <Link
               to="/files"
-              className="group inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="link-view-all-files"
             >
-              View file repository
-              <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+              <span>View all files</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           )}
         </div>
 
         {isLoading ? (
-          <div className="py-12">
+          <div className="py-16">
             <LoadingSpinner size="lg" />
           </div>
         ) : error ? (
-          <Card className="text-center py-8 text-rose-400 border-rose-900/50 bg-rose-950/20">
-            <AlertCircle className="w-8 h-8 mx-auto mb-2" />
+          <div className="geo-table-shell p-8 text-center text-rose-400">
+            <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-400" />
             <p className="font-semibold text-sm">Failed to retrieve files</p>
             <p className="text-xs text-slate-400 mt-1">{(error as Error).message}</p>
-          </Card>
+          </div>
         ) : files.length === 0 ? (
-          <Card>
+          <div className="geo-table-shell p-6">
             <EmptyState
               icon={<Upload className="w-8 h-8" />}
               title="No geospatial files uploaded yet"
@@ -371,42 +386,39 @@ export function Dashboard() {
               action={
                 <Link
                   to="/upload"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold hover:opacity-90 shadow-lg shadow-indigo-600/30"
+                  className="btn-upload-primary mt-2"
                 >
                   <Upload className="w-4 h-4" />
                   Upload First File
                 </Link>
               }
             />
-          </Card>
+          </div>
         ) : (
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl overflow-hidden shadow-2xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-slate-950/60 border-b border-slate-800/80 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+          <div className="geo-table-shell">
+            <div className="table-responsive-wrapper">
+              <table className="geo-table">
+                <thead>
                   <tr>
-                    <th className="px-5 py-3.5">Filename</th>
-                    <th className="px-5 py-3.5">Format</th>
-                    <th className="px-5 py-3.5">Size</th>
-                    <th className="px-5 py-3.5">Features</th>
-                    <th className="px-5 py-3.5">Total Area</th>
-                    <th className="px-5 py-3.5">Total Length</th>
-                    <th className="px-5 py-3.5">Status</th>
-                    <th className="px-5 py-3.5 text-right">Action</th>
+                    <th>Filename</th>
+                    <th>Format</th>
+                    <th>Size</th>
+                    <th>Features</th>
+                    <th>Total Area</th>
+                    <th>Total Length</th>
+                    <th>Status</th>
+                    <th className="text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50">
+                <tbody>
                   {files.slice(0, 5).map((file) => (
-                    <tr
-                      key={file.id}
-                      className="hover:bg-slate-800/30 transition-colors group"
-                    >
-                      <td className="px-5 py-4 font-medium text-slate-100">
+                    <tr key={file.id}>
+                      <td>
                         <Link
                           to={`/files/${file.id}`}
-                          className="hover:text-cyan-400 flex items-center gap-3 transition-colors"
+                          className="file-cell-group"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0">
+                          <div className="file-format-avatar">
                             {file.format === 'KML' ? (
                               <FileCode className="w-4 h-4 text-cyan-400" />
                             ) : (
@@ -414,47 +426,56 @@ export function Dashboard() {
                             )}
                           </div>
                           <div>
-                            <div className="truncate max-w-[220px] font-semibold text-sm text-slate-100 group-hover:text-cyan-300">
+                            <div className="file-name-title">
                               {file.filename}
                             </div>
-                            <div className="text-[11px] text-slate-400">
+                            <div className="file-timestamp-sub">
                               {formatDateShort(file.upload_timestamp)}
                             </div>
                           </div>
                         </Link>
                       </td>
-                      <td className="px-5 py-4">
+                      <td>
                         <span
-                          className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${
-                            file.format === 'KML'
-                              ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
-                              : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                          className={`format-pill ${
+                            file.format === 'KML' ? 'format-pill-kml' : 'format-pill-shapefile'
                           }`}
                         >
                           {file.format}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-slate-400 text-xs font-mono">
+                      <td className="text-slate-400 font-mono text-xs">
                         {formatFileSize(file.file_size_bytes)}
                       </td>
-                      <td className="px-5 py-4 font-bold text-slate-200">
+                      <td className="font-bold text-white">
                         {file.feature_count ?? '—'}
                       </td>
-                      <td className="px-5 py-4 text-slate-300 text-xs font-medium">
+                      <td className="text-slate-300 text-xs font-semibold">
                         {formatArea(file.total_area_sq_m, preferences.areaUnit)}
                       </td>
-                      <td className="px-5 py-4 text-slate-300 text-xs font-medium">
+                      <td className="text-slate-300 text-xs font-semibold">
                         {formatLength(file.total_length_m, preferences.lengthUnit)}
                       </td>
-                      <td className="px-5 py-4">
-                        <StatusBadge status={file.status} />
+                      <td>
+                        <span
+                          className={`status-badge-custom ${
+                            file.status === 'COMPLETED'
+                              ? 'completed'
+                              : file.status === 'PROCESSING'
+                              ? 'processing'
+                              : 'failed'
+                          }`}
+                        >
+                          <span className="badge-dot" />
+                          {file.status}
+                        </span>
                       </td>
-                      <td className="px-5 py-4 text-right">
+                      <td className="text-right">
                         <Link
                           to={`/files/${file.id}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs font-semibold text-slate-200 hover:text-white hover:bg-cyan-600 hover:border-cyan-500 transition-all shadow-sm"
+                          className="btn-table-action"
                         >
-                          View Map
+                          <span>View Map</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                       </td>

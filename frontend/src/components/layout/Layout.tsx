@@ -15,7 +15,7 @@ import { useHealth } from '@/hooks/useApi';
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard', badge: null },
-  { path: '/upload', icon: Upload, label: 'Upload Data', badge: 'Fast' },
+  { path: '/upload', icon: Upload, label: 'Upload Data', badge: null },
   { path: '/files', icon: FileStack, label: 'File Repository', badge: null },
   { path: '/settings', icon: Settings, label: 'Preferences', badge: null },
 ];
@@ -31,25 +31,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Sidebar - Desktop */}
       <aside
         className={cn(
-          'hidden md:flex flex-col border-r border-slate-800/70 bg-slate-950/80 backdrop-blur-2xl transition-all duration-300 z-30 select-none shadow-2xl',
-          collapsed ? 'w-20' : 'w-64'
+          'sidebar-panel-custom hidden md:flex flex-col transition-all duration-300 z-30 select-none',
+          collapsed ? 'w-20' : 'w-60'
         )}
       >
         {/* Brand Header */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-800/60">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 p-0.5 shadow-lg shadow-indigo-500/25 shrink-0 flex items-center justify-center">
-            <div className="w-full h-full rounded-[10px] bg-slate-950/40 backdrop-blur-sm flex items-center justify-center text-white">
-              <Globe2 className="w-5 h-5 text-cyan-300" />
-            </div>
+        <div className="sidebar-brand-box">
+          <div className="sidebar-logo-icon">
+            <Globe2 className="w-5 h-5 text-cyan-200" />
           </div>
 
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight text-white">
+                <span className="sidebar-logo-text">
                   GeoMeasure
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="sidebar-badge-gis">
                   GIS
                 </span>
               </div>
@@ -62,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <button
             onClick={() => setCollapsed(!collapsed)}
             className={cn(
-              'p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors',
+              'p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer',
               collapsed && 'mx-auto'
             )}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -77,9 +75,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 py-5 px-3 space-y-1.5 overflow-y-auto">
+        <nav className="sidebar-nav-container">
           {!collapsed && (
-            <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <div className="sidebar-section-heading">
               Navigation
             </div>
           )}
@@ -92,17 +90,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'group flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-                  isActive
-                    ? 'bg-gradient-to-r from-indigo-500/20 via-blue-500/10 to-transparent text-white border-l-2 border-indigo-500 shadow-md shadow-indigo-500/10'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60',
+                  'sidebar-nav-link group',
+                  isActive && 'active',
                   collapsed && 'justify-center px-0'
                 )}
                 title={collapsed ? item.label : undefined}
               >
                 <item.icon
                   className={cn(
-                    'w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110',
+                    'w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110 nav-icon',
                     isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'
                   )}
                 />
@@ -123,19 +119,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         {/* System Diagnostic Footer */}
         {!collapsed && (
-          <div className="p-4 border-t border-slate-800/60">
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 shadow-inner space-y-2">
+          <div className="sidebar-footer-box">
+            <div className="system-status-card space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 font-medium flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.85)] animate-pulse" />
                   FastAPI Engine
                 </span>
-                <span className="text-[11px] font-mono text-emerald-400 font-semibold">
+                <span className="text-[11px] font-mono text-emerald-400 font-bold">
                   {health?.status === 'healthy' ? 'READY' : 'ONLINE'}
                 </span>
               </div>
-              <div className="flex justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/60">
-                <span>CRS Engine: PROJ 9</span>
+              <div className="flex justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-800/80">
+                <span>CRS: PROJ 9</span>
                 <span>v1.0.0</span>
               </div>
             </div>
@@ -154,7 +150,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Mobile Drawer */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-800 transform transition-transform duration-300 md:hidden flex flex-col',
+          'fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-800 transform transition-transform duration-300 md:hidden flex flex-col shadow-2xl',
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -182,7 +178,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-gradient-to-r from-indigo-500/20 to-blue-500/10 text-white border-l-2 border-indigo-500 font-semibold'
+                    ? 'bg-gradient-to-r from-blue-600/25 to-cyan-500/15 text-white border-l-2 border-cyan-400 font-semibold'
                     : 'text-slate-400 hover:text-white hover:bg-slate-900'
                 )}
               >
@@ -200,7 +196,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="pointer-events-none absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-cyan-500/5 via-indigo-500/5 to-transparent blur-3xl" />
 
         {/* Mobile Header Bar */}
-        <div className="md:hidden flex items-center justify-between px-5 py-4 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-lg">
+        <div className="md:hidden flex items-center justify-between px-5 py-4 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-lg z-20">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
@@ -215,7 +211,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Content Container */}
-        <div className="flex-1 overflow-y-auto z-10">
+        <div className="main-content-area z-10">
           {children}
         </div>
       </main>
