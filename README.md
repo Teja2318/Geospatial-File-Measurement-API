@@ -14,7 +14,7 @@
 
 - **Multi-Format Ingestion**: Synchronously ingests and validates `.kml` documents and `.zip` Shapefile packages (with `.shp`, `.shx`, `.dbf`, and optional `.prj` components).
 - **Accurate Geodesic & Metric Calculations**: Automatically determines the local UTM zone or appropriate equal-area projected CRS for geometries to calculate metric measurements (square meters, hectares, square kilometers, meters, kilometers) rather than degree-based distortions.
-- **Interactive Geospatial Visualization**: Interactive Leaflet map with multi-layer basemaps (CartoDB Positron, OpenStreetMap, CartoDB Dark), automatic bounding-box fitting, color-coded geometry types, and interactive feature popups.
+- **Interactive Geospatial Visualization**: Interactive Leaflet map with multi-layer basemaps (Esri Dark Canvas, Esri Satellite Imagery, OpenStreetMap), automatic bounding-box fitting, color-coded geometry types, and interactive feature popups.
 - **Bi-Directional Feature Synchronization**: Select any row in the measurements table to highlight and zoom into the geometry on the map, and click any map feature to highlight its row and examine its raw attributes.
 - **Customizable Preferences**: User-configurable area units (`m²`, `ha`, `km²`), length units (`m`, `km`), and dark/light/system theme toggles persisted in `localStorage`.
 - **Multi-Format Export Engine**: Export processed dataset measurements as clean CSV tables, JSON reports, or WGS84 GeoJSON FeatureCollections ready for GIS software like QGIS or ArcGIS.
@@ -60,13 +60,16 @@ Geospatial-File-Measurement-API/
 │   │   │   ├── FileDetailPage.tsx    # Split interactive map and synchronized measurements table
 │   │   │   └── SettingsPage.tsx      # Display unit preferences, theme toggle, and system diagnostics
 │   │   ├── types/api.ts              # TypeScript interfaces mirroring Pydantic schemas
+│   │   ├── App.css                   # Custom theme tokens, card layouts, dropzone & table styles
 │   │   ├── App.tsx                   # React Router route registry
 │   │   └── main.tsx                  # React entry point
 │   ├── package.json
 │   └── vite.config.ts
 ├── tests/
 │   └── test_api.py                   # Pytest test suite (health, upload, measurements, exports)
-└── requirements.txt                  # Python dependencies
+├── storage/                          # Auto-created runtime storage for uploads & metadata
+├── requirements.txt                  # Python backend dependencies
+└── README.md
 ```
 
 ---
@@ -79,7 +82,7 @@ GeoMeasure solves this by:
 1. Detecting the input dataset's native Coordinate Reference System (`source_crs`).
 2. If unprojected (geographic WGS84) or missing:
    - Calculating the centroid longitude and latitude of each feature.
-   - Dynamically selecting the appropriate **Universal Transverse Mercator (UTM)** zone (e.g. `EPSG:32610` for California) or an equal-area projection.
+   - Dynamically selecting the appropriate **Universal Transverse Mercator (UTM)** zone (e.g. `EPSG:32610` for Northern California) or an optimal projected meridian.
 3. Transforming coordinates into metric projected space via `pyproj` and `geopandas`.
 4. Computing planar surface area in square meters ($m^2$), curvilinear perimeter in meters ($m$), and path length in meters ($m$) using exact Shapely geometries.
 5. Exporting GeoJSON geometries back into standard WGS84 (`EPSG:4326`) for universal Leaflet/web compatibility.
@@ -104,67 +107,212 @@ Interactive OpenAPI documentation is available at `http://localhost:8000/docs`.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Step-by-Step Setup Instructions
 
 ### 1. Prerequisites
-- Python 3.9+
-- Node.js 18+ & npm
-- GDAL / GEOS libraries (bundled with `geopandas` / `pyogrio` / `shapely` binary wheels)
 
-### 2. Backend Setup
-```bash
-# Clone the repository
-cd Geospatial-File-Measurement-API
+Before installing, ensure your system has the following installed:
 
-# Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+- **Python**: Version `3.9` or higher (`python3 --version`)
+- **Node.js**: Version `18.0.0` or higher (`node --version`)
+- **npm**: Version `9.0.0` or higher (`npm --version`)
+- **Git**: (`git --version`)
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Start FastAPI development server
-uvicorn app.main:app --reload --port 8000
-```
-Backend will be live at `http://localhost:8000`.
-
-### 3. Frontend Setup
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install npm dependencies
-npm install
-
-# Start Vite development server
-npm run dev
-```
-Frontend will be live at `http://localhost:5173`.
+> **Note on Geospatial Dependencies**: Binary wheels for `geopandas`, `shapely`, `pyproj`, and `fiona` automatically bundle GDAL, GEOS, and PROJ for macOS, Linux, and Windows. If installing from source on Linux, ensure system libraries are installed (e.g. `sudo apt-get install gdal-bin libgdal-dev`).
 
 ---
 
-## 🧪 Running Tests
+### 2. Clone the Repository
 
-### Backend Tests (Pytest)
 ```bash
-# In the root repository directory with virtual environment activated:
-pytest -v
+git clone https://github.com/Teja2318/Geospatial-File-Measurement-API.git
+cd Geospatial-File-Measurement-API
 ```
 
-### Frontend Tests (Vitest)
+---
+
+### 3. Backend Setup (FastAPI)
+
+#### Step 3.1: Create and Activate a Virtual Environment
+
+**On macOS / Linux:**
 ```bash
-# In the frontend directory:
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**On Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**On Windows (Command Prompt):**
+```cmd
+python -m venv .venv
+.venv\Scripts\activate.bat
+```
+
+#### Step 3.2: Install Backend Dependencies
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+#### Step 3.3: Configure Environment Variables
+
+Create a `.env` file in the root directory (or copy from `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+Default settings in `.env`:
+```ini
+# Maximum file upload limit in megabytes
+MAX_UPLOAD_SIZE_MB=50
+
+# Allowed CORS origins (comma-separated)
+CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173
+```
+
+#### Step 3.4: Start the Backend Server
+
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+- **API Base URL**: `http://localhost:8000`
+- **Swagger Interactive API Docs**: `http://localhost:8000/docs`
+- **ReDoc Documentation**: `http://localhost:8000/redoc`
+- **Health Check**: `http://localhost:8000/health`
+
+---
+
+### 4. Frontend Setup (React + Vite)
+
+Open a **new terminal tab or window** and navigate to the `frontend` directory.
+
+#### Step 4.1: Install Node Dependencies
+
+```bash
+cd frontend
+npm install
+```
+
+#### Step 4.2: Configure Frontend Environment Variables
+
+Create a `.env` file inside the `frontend/` directory (or copy from `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+Contents of `frontend/.env`:
+```ini
+# Backend API base URL
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+#### Step 4.3: Start the Frontend Development Server
+
+```bash
+npm run dev
+```
+
+- **Frontend Application URL**: `http://localhost:5173`
+
+The application will automatically connect to the FastAPI backend running on port 8000.
+
+---
+
+## 🧪 Testing & Validation
+
+### 1. Backend Automated Tests (Pytest)
+
+Run the test suite in the root directory with the virtual environment activated:
+
+```bash
+# Run all tests with verbose output
+pytest -v
+
+# Run with test coverage
+pytest --tb=short
+```
+
+Tests validate:
+- System health checks and metadata endpoints
+- KML file upload and parsing
+- ESRI Shapefile archive validation (checking `.shp`, `.shx`, `.dbf`)
+- UTM projection accuracy and SI metric area/length calculations
+- Multi-format export generation (`CSV`, `JSON`, `GeoJSON`)
+- Error handling for invalid geometries or oversized payloads
+
+### 2. Frontend Unit Tests (Vitest)
+
+In the `frontend/` directory:
+
+```bash
 cd frontend
 npm test
 ```
 
-### Frontend Production Build
+Tests validate:
+- Metric unit conversion functions (meters, kilometers, square meters, hectares, square kilometers)
+- File size formatting helpers
+- Status badge and geometry styling token resolvers
+
+### 3. Frontend Production Build Check
+
+Verify that TypeScript types and Vite bundling succeed without errors:
+
 ```bash
 cd frontend
 npm run build
 ```
 
+The compiled production bundle will be written to `frontend/dist/`.
+
+---
+
+## 📂 Testing with Geospatial Datasets
+
+### Supported Formats:
+1. **Google Earth KML (`.kml`)**: Standard XML vector file containing Points, LineStrings, or Polygons.
+2. **ESRI Shapefile Archive (`.zip`)**: A standard `.zip` archive containing at minimum:
+   - `<name>.shp` (Geometry shapes)
+   - `<name>.shx` (Shape index)
+   - `<name>.dbf` (Attribute table)
+   - *(Optional)* `<name>.prj` (Coordinate Reference System definition)
+
+### Quick Upload Verification:
+1. Open the web app at `http://localhost:5173`.
+2. Click **Upload Data** in the sidebar or header.
+3. Drag and drop any `.kml` or `.zip` file into the upload zone (or click to browse).
+4. Click **Upload & Analyze Geometries**.
+5. Once processing completes, click **Inspect Map & Features** to explore the interactive Leaflet map, feature attributes, and metric calculations.
+
+---
+
+## 🛠️ Common Troubleshooting
+
+### 1. `CORS error` when calling the API
+- Ensure the backend server is running on `http://localhost:8000`.
+- Verify that `CORS_ORIGINS` in your root `.env` includes `http://localhost:5173`.
+
+### 2. `Shapefile ZIP validation failed`
+- Ensure the root of the `.zip` archive directly contains `.shp`, `.shx`, and `.dbf` companion files without being nested inside extra parent folders.
+
+### 3. `ModuleNotFoundError: No module named 'geopandas'` (or `fiona`)
+- Ensure your Python virtual environment is activated (`source .venv/bin/activate` or `.venv\Scripts\activate`).
+- Run `pip install -r requirements.txt`.
+
+### 4. Port 8000 or 5173 Already in Use
+- **Backend on custom port**: `uvicorn app.main:app --reload --port 8080` (update `VITE_API_BASE_URL=http://localhost:8080` in `frontend/.env`).
+- **Frontend on custom port**: `npm run dev -- --port 3000` (ensure `http://localhost:3000` is listed in backend `CORS_ORIGINS`).
+
 ---
 
 ## 📄 License
-MIT License.
+This project is licensed under the MIT License.
