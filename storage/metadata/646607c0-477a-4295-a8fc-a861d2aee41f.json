@@ -1,0 +1,117 @@
+{
+  "id": "646607c0-477a-4295-a8fc-a861d2aee41f",
+  "filename": "test_farm.kml",
+  "format": "KML",
+  "file_size_bytes": 980,
+  "status": "COMPLETED",
+  "upload_timestamp": "2026-10-12T06:13:17.625758+00:00",
+  "feature_count": 3,
+  "source_crs": "EPSG:4326",
+  "error_message": null,
+  "geometry_types": [
+    "LineString",
+    "Point",
+    "Polygon"
+  ],
+  "total_area_sq_m": 39272.0456,
+  "total_length_m": 353.9565,
+  "measurements": [
+    {
+      "feature_id": 0,
+      "geometry_type": "Polygon",
+      "source_crs": "EPSG:4326",
+      "measurement_crs": "UTM Zone 10N (EPSG:32610)",
+      "properties": {
+        "Name": "Sample Farm",
+        "Description": "Agricultural parcel"
+      },
+      "area_sq_m": 39272.0456,
+      "length_m": null,
+      "perimeter_m": 797.7618,
+      "measurement_status": "COMPLETED",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.084,
+              37.422,
+              0.0
+            ],
+            [
+              -122.082,
+              37.422,
+              0.0
+            ],
+            [
+              -122.082,
+              37.42,
+              0.0
+            ],
+            [
+              -122.084,
+              37.42,
+              0.0
+            ],
+            [
+              -122.084,
+              37.422,
+              0.0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "feature_id": 1,
+      "geometry_type": "LineString",
+      "source_crs": "EPSG:4326",
+      "measurement_crs": "UTM Zone 10N (EPSG:32610)",
+      "properties": {
+        "Name": "Boundary Road",
+        "Description": "Access road"
+      },
+      "area_sq_m": null,
+      "length_m": 353.9565,
+      "perimeter_m": null,
+      "measurement_status": "COMPLETED",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -122.084,
+            37.422,
+            0.0
+          ],
+          [
+            -122.08,
+            37.422,
+            0.0
+          ]
+        ]
+      }
+    },
+    {
+      "feature_id": 2,
+      "geometry_type": "Point",
+      "source_crs": "EPSG:4326",
+      "measurement_crs": "UTM Zone 10N (EPSG:32610)",
+      "properties": {
+        "Name": "Survey Marker",
+        "Description": ""
+      },
+      "area_sq_m": null,
+      "length_m": null,
+      "perimeter_m": null,
+      "measurement_status": "NOT_REQUIRED",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.083,
+          37.421,
+          0.0
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "6e9eb2bb-4940-44a2-816e-fe0d0d48d5d3",
+  "filename": "sample_shapefile.zip",
+  "format": "Shapefile",
+  "file_size_bytes": 907,
+  "status": "COMPLETED",
+  "upload_timestamp": "2026-10-12T06:13:05.075864+00:00",
+  "feature_count": 1,
+  "source_crs": "EPSG:4326",
+  "error_message": null,
+  "geometry_types": [
+    "Polygon"
+  ],
+  "total_area_sq_m": 11771.7564,
+  "total_length_m": 0.0,
+  "measurements": [
+    {
+      "feature_id": 0,
+      "geometry_type": "Polygon",
+      "source_crs": "EPSG:4326",
+      "measurement_crs": "UTM Zone 44N (EPSG:32644)",
+      "properties": {
+        "name": "Sample Plot B",
+        "feature_co": "PLOT-B"
+      },
+      "area_sq_m": 11771.7564,
+      "length_m": null,
+      "perimeter_m": 434.0806,
+      "measurement_status": "COMPLETED",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              78.49,
+              17.39
+            ],
+            [
+              78.491,
+              17.39
+            ],
+            [
+              78.491,
+              17.391
+            ],
+            [
+              78.49,
+              17.391
+            ],
+            [
+              78.49,
+              17.39
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

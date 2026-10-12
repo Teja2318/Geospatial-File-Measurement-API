@@ -1,0 +1,122 @@
+{
+  "id": "0e792b4c-27df-4e90-8643-090632dd987a",
+  "filename": "sample_survey.kml",
+  "format": "KML",
+  "file_size_bytes": 1221,
+  "status": "COMPLETED",
+  "upload_timestamp": "2026-10-12T06:12:36.414781+00:00",
+  "feature_count": 3,
+  "source_crs": "EPSG:4326",
+  "error_message": null,
+  "geometry_types": [
+    "Polygon",
+    "LineString",
+    "Point"
+  ],
+  "total_area_sq_m": 11772.1258,
+  "total_length_m": 239.7369,
+  "measurements": [
+    {
+      "feature_id": 0,
+      "geometry_type": "Polygon",
+      "source_crs": "EPSG:4326",
+      "measurement_crs": "UTM Zone 44N (EPSG:32644)",
+      "properties": {
+        "Name": "Sample Plot A",
+        "Description": "Polygon for area measurement testing"
+      },
+      "area_sq_m": 11772.1258,
+      "length_m": null,
+      "perimeter_m": 434.0873,
+      "measurement_status": "COMPLETED",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              78.4867,
+              17.385,
+              0.0
+            ],
+            [
+              78.4877,
+              17.385,
+              0.0
+            ],
+            [
+              78.4877,
+              17.386,
+              0.0
+            ],
+            [
+              78.4867,
+              17.386,
+              0.0
+            ],
+            [
+              78.4867,
+              17.385,
+              0.0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "feature_id": 1,
+      "geometry_type": "LineString",
+      "source_crs": "EPSG:4326",
+      "measurement_crs": "UTM Zone 44N (EPSG:32644)",
+      "properties": {
+        "Name": "Sample Road Segment",
+        "Description": "Line for length measurement testing"
+      },
+      "area_sq_m": null,
+      "length_m": 239.7369,
+      "perimeter_m": null,
+      "measurement_status": "COMPLETED",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            78.486,
+            17.3845,
+            0.0
+          ],
+          [
+            78.487,
+            17.385,
+            0.0
+          ],
+          [
+            78.488,
+            17.3855,
+            0.0
+          ]
+        ]
+      }
+    },
+    {
+      "feature_id": 2,
+      "geometry_type": "Point",
+      "source_crs": "EPSG:4326",
+      "measurement_crs": "UTM Zone 44N (EPSG:32644)",
+      "properties": {
+        "Name": "Sample Survey Marker",
+        "Description": ""
+      },
+      "area_sq_m": null,
+      "length_m": null,
+      "perimeter_m": null,
+      "measurement_status": "NOT_REQUIRED",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.4867,
+          17.385,
+          0.0
+        ]
+      }
+    }
+  ]
+}
