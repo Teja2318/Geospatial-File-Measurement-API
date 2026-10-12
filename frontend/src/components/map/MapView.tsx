@@ -7,7 +7,7 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import type { GeoJSONFeatureCollection, AreaUnit, LengthUnit } from '@/types/api';
-import { formatArea, formatLength, geometryTypeColor } from '@/lib/utils';
+import { formatArea, formatLength } from '@/lib/utils';
 import { Layers, MapPin } from 'lucide-react';
 
 interface MapViewProps {
@@ -19,7 +19,7 @@ interface MapViewProps {
   className?: string;
 }
 
-// Helper component to auto-fit map bounds when GeoJSON changes
+// Auto-fit map bounds
 function FitBounds({ data, selectedFeatureId }: { data: GeoJSONFeatureCollection | null; selectedFeatureId: number | null }) {
   const map = useMap();
 
@@ -28,7 +28,6 @@ function FitBounds({ data, selectedFeatureId }: { data: GeoJSONFeatureCollection
 
     try {
       if (selectedFeatureId != null) {
-        // Find selected feature and fit to its bounds
         const target = data.features.find(
           (f, idx) => (f.properties?.feature_id === selectedFeatureId) || idx === selectedFeatureId
         );
@@ -36,17 +35,16 @@ function FitBounds({ data, selectedFeatureId }: { data: GeoJSONFeatureCollection
           const layer = L.geoJSON(target as any);
           const bounds = layer.getBounds();
           if (bounds.isValid()) {
-            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+            map.fitBounds(bounds, { padding: [60, 60], maxZoom: 16 });
             return;
           }
         }
       }
 
-      // Default: fit all features
       const layer = L.geoJSON(data as any);
       const bounds = layer.getBounds();
       if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [30, 30], maxZoom: 15 });
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
       }
     } catch (e) {
       console.warn('Could not fit map bounds:', e);
@@ -58,19 +56,19 @@ function FitBounds({ data, selectedFeatureId }: { data: GeoJSONFeatureCollection
 
 const TILE_PROVIDERS = [
   {
-    name: 'CartoDB Positron',
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    name: 'Esri Dark Canvas',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+  },
+  {
+    name: 'Esri Satellite Imagery',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri, i-cubed, USDA, USGS',
   },
   {
     name: 'OpenStreetMap',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  },
-  {
-    name: 'CartoDB Dark',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors',
   },
 ];
 
@@ -82,37 +80,45 @@ export function MapView({
   lengthUnit,
   className,
 }: MapViewProps) {
-  const [tileIndex, setTileIndex] = useState(0);
+  const [tileIndex, setTileIndex] = useState(0); // Default to Dark Matter!
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
 
-  // Style function for Leaflet GeoJSON features
   const styleFeature = (feature: any) => {
     const featId = feature?.properties?.feature_id;
     const isSelected = selectedFeatureId != null && featId === selectedFeatureId;
     const geomType = feature?.geometry?.type || '';
-    const baseColor = geometryTypeColor(geomType);
+
+    let baseFill = '#38bdf8';
+    let baseStroke = '#0284c7';
+
+    if (geomType.includes('Line')) {
+      baseFill = '#fb7185';
+      baseStroke = '#f43f5e';
+    } else if (geomType.includes('Point')) {
+      baseFill = '#34d399';
+      baseStroke = '#10b981';
+    }
 
     return {
-      fillColor: isSelected ? '#eab308' : baseColor,
-      weight: isSelected ? 4 : 2,
+      fillColor: isSelected ? '#fbbf24' : baseFill,
+      weight: isSelected ? 4 : 2.5,
       opacity: 1,
-      color: isSelected ? '#ca8a04' : baseColor,
-      fillOpacity: isSelected ? 0.6 : 0.35,
+      color: isSelected ? '#f59e0b' : baseStroke,
+      fillOpacity: isSelected ? 0.75 : 0.4,
     };
   };
 
-  // Point to layer creation using nice circle markers
   const pointToLayer = (feature: any, latlng: L.LatLng) => {
     const featId = feature?.properties?.feature_id;
     const isSelected = selectedFeatureId != null && featId === selectedFeatureId;
     return L.circleMarker(latlng, {
-      radius: isSelected ? 10 : 7,
-      fillColor: isSelected ? '#eab308' : '#22c55e',
-      color: isSelected ? '#ca8a04' : '#15803d',
-      weight: 2,
+      radius: isSelected ? 11 : 7,
+      fillColor: isSelected ? '#fbbf24' : '#34d399',
+      color: isSelected ? '#f59e0b' : '#059669',
+      weight: isSelected ? 3 : 2,
       opacity: 1,
-      fillOpacity: 0.85,
+      fillOpacity: 0.9,
     });
   };
 
@@ -125,58 +131,54 @@ export function MapView({
     const perimeter = props.perimeter_m != null ? formatLength(props.perimeter_m as number, lengthUnit) : null;
 
     let popupContent = `
-      <div style="font-family: inherit; font-size: 13px; min-width: 180px; padding: 2px;">
-        <div style="font-weight: 700; font-size: 14px; margin-bottom: 6px; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
-          Feature #${featId}
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="color: #64748b;">Type:</span>
-          <span style="font-weight: 600; color: #0f172a;">${geomType}</span>
+      <div style="font-family: inherit; font-size: 13px; min-width: 200px; padding: 4px; color: #f8fafc;">
+        <div style="font-weight: 800; font-size: 14px; margin-bottom: 6px; color: #38bdf8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; display: flex; justify-content: space-between;">
+          <span>Feature #${featId}</span>
+          <span style="font-size: 11px; padding: 2px 6px; background: rgba(56,189,248,0.15); border-radius: 4px; color: #7dd3fc;">${geomType}</span>
         </div>
     `;
 
     if (area) {
       popupContent += `
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="color: #64748b;">Area:</span>
-          <span style="font-weight: 600; color: #2563eb;">${area}</span>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+          <span style="color: #94a3b8;">Planar Area:</span>
+          <span style="font-weight: 700; color: #38bdf8;">${area}</span>
         </div>
       `;
     }
 
     if (length) {
       popupContent += `
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="color: #64748b;">Length:</span>
-          <span style="font-weight: 600; color: #dc2626;">${length}</span>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+          <span style="color: #94a3b8;">Path Length:</span>
+          <span style="font-weight: 700; color: #fb7185;">${length}</span>
         </div>
       `;
     }
 
     if (perimeter) {
       popupContent += `
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="color: #64748b;">Perimeter:</span>
-          <span style="font-weight: 600; color: #dc2626;">${perimeter}</span>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+          <span style="color: #94a3b8;">Perimeter:</span>
+          <span style="font-weight: 700; color: #fb7185;">${perimeter}</span>
         </div>
       `;
     }
 
-    // Include other notable attributes
     const extraProps = Object.entries(props).filter(
       ([k]) => !['feature_id', 'geometry_type', 'area_sq_m', 'length_m', 'perimeter_m', 'measurement_status', 'source_crs', 'measurement_crs'].includes(k)
     );
 
     if (extraProps.length > 0) {
       popupContent += `
-        <div style="margin-top: 6px; padding-top: 4px; border-top: 1px dashed #e2e8f0;">
-          <span style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 600;">Attributes</span>
+        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1);">
+          <span style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">Properties</span>
       `;
       extraProps.slice(0, 4).forEach(([k, v]) => {
         popupContent += `
-          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 2px;">
-            <span style="color: #64748b; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${k}:</span>
-            <span style="font-weight: 500; color: #334155; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${String(v)}</span>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 3px;">
+            <span style="color: #94a3b8; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${k}:</span>
+            <span style="font-weight: 500; color: #e2e8f0; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${String(v)}</span>
           </div>
         `;
       });
@@ -198,12 +200,12 @@ export function MapView({
   const activeTile = TILE_PROVIDERS[tileIndex];
 
   return (
-    <div className={`relative w-full h-full rounded-xl overflow-hidden border border-[hsl(var(--border))] ${className || ''}`}>
+    <div className={`relative w-full h-full rounded-2xl overflow-hidden border border-slate-800 shadow-2xl ${className || ''}`}>
       <MapContainer
         center={[20, 0]}
         zoom={2}
         scrollWheelZoom={true}
-        className="w-full h-full min-h-[400px]"
+        className="w-full h-full min-h-[420px]"
       >
         <TileLayer
           key={activeTile.url}
@@ -226,20 +228,20 @@ export function MapView({
         )}
       </MapContainer>
 
-      {/* Layer Switcher Controls */}
-      <div className="absolute top-3 right-3 z-[1000] flex flex-col gap-2">
+      {/* Floating Layer Switcher Controls */}
+      <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
         <div className="relative">
           <button
             onClick={() => setShowLayerMenu(!showLayerMenu)}
-            className="p-2 bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg shadow-md hover:bg-[hsl(var(--muted))] text-[hsl(var(--foreground))] transition-colors flex items-center gap-1.5 text-xs font-medium"
+            className="px-3.5 py-2 bg-slate-900/90 backdrop-blur-xl border border-slate-700/80 rounded-xl shadow-2xl hover:bg-slate-800 text-white transition-all flex items-center gap-2 text-xs font-semibold"
             title="Switch Basemap"
           >
-            <Layers className="w-4 h-4 text-[hsl(var(--primary))]" />
-            <span className="hidden sm:inline">{activeTile.name}</span>
+            <Layers className="w-4 h-4 text-cyan-400" />
+            <span>{activeTile.name}</span>
           </button>
 
           {showLayerMenu && (
-            <div className="absolute right-0 mt-1 py-1 w-44 bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg shadow-xl text-xs z-[1001]">
+            <div className="absolute right-0 mt-2 py-1.5 w-52 bg-slate-900/95 backdrop-blur-2xl border border-slate-700 rounded-xl shadow-2xl text-xs z-[1001] space-y-0.5">
               {TILE_PROVIDERS.map((provider, idx) => (
                 <button
                   key={provider.name}
@@ -247,12 +249,12 @@ export function MapView({
                     setTileIndex(idx);
                     setShowLayerMenu(false);
                   }}
-                  className={`w-full text-left px-3 py-2 hover:bg-[hsl(var(--muted))] flex items-center justify-between ${
-                    idx === tileIndex ? 'font-bold text-[hsl(var(--primary))]' : 'text-[hsl(var(--foreground))]'
+                  className={`w-full text-left px-3.5 py-2.5 hover:bg-slate-800/80 flex items-center justify-between transition-colors ${
+                    idx === tileIndex ? 'font-bold text-cyan-400 bg-cyan-500/10' : 'text-slate-300'
                   }`}
                 >
                   {provider.name}
-                  {idx === tileIndex && <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--primary))]" />}
+                  {idx === tileIndex && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#38bdf8]" />}
                 </button>
               ))}
             </div>
@@ -260,23 +262,23 @@ export function MapView({
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-[hsl(var(--card))]/90 backdrop-blur-sm border border-[hsl(var(--border))] rounded-lg p-2.5 shadow-md text-xs space-y-1.5">
-        <div className="font-semibold text-[hsl(var(--foreground))] mb-1 flex items-center gap-1">
-          <MapPin className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
-          Geometries
+      {/* Floating Legend */}
+      <div className="absolute bottom-4 left-4 z-[1000] bg-slate-900/90 backdrop-blur-xl border border-slate-700/80 rounded-xl p-3 shadow-2xl text-xs space-y-2">
+        <div className="font-bold text-white flex items-center gap-1.5 pb-1 border-b border-slate-800">
+          <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+          Layer Types
         </div>
-        <div className="flex items-center gap-2 text-[hsl(var(--muted-foreground))]">
-          <span className="w-3 h-3 rounded bg-blue-500 border border-blue-600 shrink-0" />
+        <div className="flex items-center gap-2.5 text-slate-300">
+          <span className="w-3.5 h-3.5 rounded bg-sky-400/80 border border-sky-300 shrink-0 shadow-sm" />
           <span>Polygon (Area)</span>
         </div>
-        <div className="flex items-center gap-2 text-[hsl(var(--muted-foreground))]">
-          <span className="w-3 h-1 bg-red-500 shrink-0" />
-          <span>LineString (Length)</span>
+        <div className="flex items-center gap-2.5 text-slate-300">
+          <span className="w-3.5 h-1.5 bg-rose-400 rounded-full shrink-0 shadow-sm" />
+          <span>LineString (Path)</span>
         </div>
-        <div className="flex items-center gap-2 text-[hsl(var(--muted-foreground))]">
-          <span className="w-2.5 h-2.5 rounded-full bg-green-500 border border-green-600 shrink-0" />
-          <span>Point</span>
+        <div className="flex items-center gap-2.5 text-slate-300">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border border-emerald-300 shrink-0 shadow-[0_0_6px_#34d399]" />
+          <span>Point (Marker)</span>
         </div>
       </div>
     </div>

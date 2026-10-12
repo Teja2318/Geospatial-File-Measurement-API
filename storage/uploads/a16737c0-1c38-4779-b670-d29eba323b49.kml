@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>GeoMeasure Sample Survey</name>
+    <Placemark>
+      <name>Sample Plot A</name>
+      <description>Polygon for area measurement testing</description>
+      <ExtendedData>
+        <Data name="owner"><value>Survey Team</value></Data>
+        <Data name="plot_code"><value>PLOT-A</value></Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs><LinearRing><coordinates>
+          78.4867,17.3850,0
+          78.4877,17.3850,0
+          78.4877,17.3860,0
+          78.4867,17.3860,0
+          78.4867,17.3850,0
+        </coordinates></LinearRing></outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Sample Road Segment</name>
+      <description>Line for length measurement testing</description>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          78.4860,17.3845,0
+          78.4870,17.3850,0
+          78.4880,17.3855,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Sample Survey Marker</name>
+      <Point><coordinates>78.4867,17.3850,0</coordinates></Point>
+    </Placemark>
+  </Document>
+</kml>

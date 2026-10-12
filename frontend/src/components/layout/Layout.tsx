@@ -9,8 +9,6 @@ import {
   Menu,
   X,
   ChevronLeft,
-  Sparkles,
-  Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHealth } from '@/hooks/useApi';

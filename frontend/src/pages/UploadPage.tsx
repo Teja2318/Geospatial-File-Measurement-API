@@ -9,6 +9,8 @@ import {
   FileArchive,
   ArrowRight,
   Info,
+  Sparkles,
+  Zap,
 } from 'lucide-react';
 import { useUploadFile } from '@/hooks/useApi';
 import { Card, LoadingSpinner } from '@/components/ui/components';
@@ -84,66 +86,70 @@ export function UploadPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[hsl(var(--foreground))]">
-          Upload Geospatial Data
+    <div className="p-6 md:p-10 space-y-8 max-w-4xl mx-auto">
+      <div className="space-y-1">
+        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider inline-flex items-center gap-1.5">
+          <Zap className="w-3 h-3 text-cyan-400" />
+          Ingestion Pipeline
+        </span>
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+          Upload Geospatial Datasets
         </h1>
-        <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
-          Upload KML files or Shapefile ZIP packages to extract features and compute accurate measurements
+        <p className="text-sm text-slate-400">
+          Upload Google Earth KML documents or ESRI Shapefile archives to calculate high-precision metric SI measurements
         </p>
       </div>
 
-      {/* Error Banner */}
+      {/* Error Callout */}
       {errorMsg && (
-        <div className="flex items-start gap-3 p-4 rounded-xl border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/50 text-red-700 dark:text-red-400">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <div className="flex-1 text-sm">
-            <h4 className="font-semibold">Upload Failed</h4>
-            <p className="mt-0.5">{errorMsg}</p>
+        <div className="flex items-start gap-3 p-4 rounded-2xl border border-rose-500/30 bg-rose-950/40 text-rose-300 shadow-xl backdrop-blur-xl text-sm">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-400" />
+          <div className="flex-1">
+            <h4 className="font-bold">Validation Error</h4>
+            <p className="mt-0.5 text-xs text-rose-200">{errorMsg}</p>
           </div>
         </div>
       )}
 
-      {/* Success Banner */}
+      {/* Success Notification Card */}
       {uploadResult && (
-        <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/20">
+        <div className="p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/30 backdrop-blur-xl shadow-2xl space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-emerald-900 dark:text-emerald-200">
+                <h3 className="font-bold text-base text-white">
                   {uploadResult.filename} processed successfully!
                 </h3>
-                <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5">
-                  Extracted {uploadResult.feature_count ?? 0} features &bull; CRS: {uploadResult.source_crs || 'Unknown'}
+                <p className="text-xs text-emerald-300 mt-0.5">
+                  Extracted {uploadResult.feature_count ?? 0} features &bull; Source CRS: {uploadResult.source_crs || 'WGS84'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={() => setUploadResult(null)}
-                className="px-3 py-1.5 text-xs font-medium rounded-lg border border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]"
+                className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
                 Upload Another
               </button>
               <button
                 onClick={() => navigate(`/files/${uploadResult.id}`)}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--primary))] text-white hover:opacity-90 shadow-sm"
+                className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5"
               >
-                View Map & Measurements
-                <ArrowRight className="w-3.5 h-3.5" />
+                Inspect Map & Features
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
-      {/* Drag & Drop Upload Zone */}
-      <Card>
+      {/* Drag & Drop Hero Box */}
+      <Card className="p-8 md:p-10 relative overflow-hidden">
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -152,10 +158,10 @@ export function UploadPage() {
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${
+          className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${
             dragOver
-              ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/5 scale-[0.99]'
-              : 'border-[hsl(var(--border))] hover:border-[hsl(var(--primary))]/60 hover:bg-[hsl(var(--muted))]/30'
+              ? 'border-cyan-400 bg-cyan-500/10 scale-[0.99] shadow-2xl shadow-cyan-500/20'
+              : 'border-slate-800 hover:border-slate-600 bg-slate-950/40 hover:bg-slate-950/60'
           }`}
         >
           <input
@@ -170,45 +176,47 @@ export function UploadPage() {
             }}
           />
 
-          <div className="w-16 h-16 rounded-2xl bg-[hsl(var(--muted))] text-[hsl(var(--primary))] flex items-center justify-center mx-auto mb-4">
-            <Upload className="w-8 h-8" />
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-500/10 via-indigo-500/20 to-purple-500/10 border border-indigo-500/30 text-cyan-400 flex items-center justify-center mx-auto mb-5 shadow-xl shadow-cyan-500/10 group-hover:scale-105 transition-transform">
+            <Upload className="w-9 h-9" />
           </div>
 
-          <h3 className="text-base font-semibold text-[hsl(var(--foreground))]">
-            Drop your file here, or{' '}
-            <span className="text-[hsl(var(--primary))] underline underline-offset-4">browse</span>
+          <h3 className="text-lg font-bold text-white mb-1">
+            Drop your dataset here, or{' '}
+            <span className="text-cyan-400 underline underline-offset-4 decoration-cyan-400/50">browse files</span>
           </h3>
-          <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 max-w-md mx-auto">
             Supports Google Earth KML (.kml) and ESRI Shapefile Archives (.zip) up to 50 MB
           </p>
 
-          <div className="mt-6 flex items-center justify-center gap-4 text-xs font-medium text-[hsl(var(--muted-foreground))]">
-            <span className="flex items-center gap-1">
-              <FileCode className="w-4 h-4 text-blue-500" />
+          <div className="mt-6 flex items-center justify-center gap-6 text-xs font-semibold text-slate-300">
+            <span className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800">
+              <FileCode className="w-4 h-4 text-cyan-400" />
               .kml
             </span>
-            <span className="flex items-center gap-1">
-              <FileArchive className="w-4 h-4 text-amber-500" />
+            <span className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800">
+              <FileArchive className="w-4 h-4 text-amber-400" />
               .zip (Shapefile)
             </span>
           </div>
         </div>
 
-        {/* Selected file preview */}
+        {/* Selected file confirmation & upload action */}
         {selectedFile && (
-          <div className="mt-6 p-4 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))]/30 space-y-4">
+          <div className="mt-6 p-5 rounded-xl border border-slate-800 bg-slate-950/80 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {selectedFile.name.endsWith('.kml') ? (
-                  <FileCode className="w-8 h-8 text-blue-500 shrink-0" />
-                ) : (
-                  <FileArchive className="w-8 h-8 text-amber-500 shrink-0" />
-                )}
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center shrink-0">
+                  {selectedFile.name.endsWith('.kml') ? (
+                    <FileCode className="w-5 h-5 text-cyan-400" />
+                  ) : (
+                    <FileArchive className="w-5 h-5 text-amber-400" />
+                  )}
+                </div>
                 <div>
-                  <div className="text-sm font-semibold text-[hsl(var(--foreground))]">
+                  <div className="text-sm font-bold text-white">
                     {selectedFile.name}
                   </div>
-                  <div className="text-xs text-[hsl(var(--muted-foreground))]">
+                  <div className="text-xs text-slate-400 font-mono">
                     {formatFileSize(selectedFile.size)}
                   </div>
                 </div>
@@ -218,22 +226,25 @@ export function UploadPage() {
                 type="button"
                 onClick={() => setSelectedFile(null)}
                 disabled={uploadMutation.isPending}
-                className="text-xs text-[hsl(var(--muted-foreground))] hover:text-red-500 transition-colors"
+                className="text-xs text-slate-400 hover:text-rose-400 transition-colors font-medium px-2 py-1"
               >
-                Remove
+                Change File
               </button>
             </div>
 
             {/* Progress bar */}
             {uploadMutation.isPending && (
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs text-[hsl(var(--muted-foreground))]">
-                  <span>Uploading & Calculating Geometries...</span>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-slate-400 font-medium">
+                  <span className="flex items-center gap-2 text-cyan-400">
+                    <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                    Computing projected UTM coordinates...
+                  </span>
                   <span>{progress}%</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-[hsl(var(--muted))] overflow-hidden">
+                <div className="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden">
                   <div
-                    className="h-full bg-[hsl(var(--primary))] transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 transition-all duration-300 shadow-[0_0_12px_#38bdf8]"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -243,7 +254,7 @@ export function UploadPage() {
             <button
               onClick={handleSubmit}
               disabled={uploadMutation.isPending}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[hsl(var(--primary))] text-white font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 transition-all disabled:opacity-50"
             >
               {uploadMutation.isPending ? (
                 <>
@@ -253,7 +264,7 @@ export function UploadPage() {
               ) : (
                 <>
                   <FileCheck className="w-4 h-4" />
-                  Upload & Analyze File
+                  Upload & Analyze Geometries
                 </>
               )}
             </button>
@@ -261,36 +272,57 @@ export function UploadPage() {
         )}
       </Card>
 
-      {/* Guidelines and Documentation */}
+      {/* Guide Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[hsl(var(--foreground))]">
-            <Info className="w-4 h-4 text-[hsl(var(--primary))]" />
-            Shapefile Archive Guidelines
+          <div className="flex items-center gap-2 text-sm font-bold text-white">
+            <Info className="w-4 h-4 text-cyan-400" />
+            Shapefile Archive Anatomy
           </div>
-          <p className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">
-            Shapefiles consist of multiple interdependent files bundled inside a <strong>.zip</strong> archive.
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Ensure your <strong>.zip</strong> archive contains all companion files required by the ESRI specification:
           </p>
-          <ul className="text-xs space-y-1.5 text-[hsl(var(--muted-foreground))] list-disc pl-4">
-            <li><strong>.shp</strong>: Shape format feature geometry (Mandatory)</li>
-            <li><strong>.shx</strong>: Positional index of geometry (Mandatory)</li>
-            <li><strong>.dbf</strong>: Attribute format columnar properties (Mandatory)</li>
-            <li><strong>.prj</strong>: Projection coordinate system description (Recommended)</li>
+          <ul className="text-xs space-y-2 text-slate-400 list-none">
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <strong>.shp</strong>: Vector geometry shape definition
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <strong>.shx</strong>: Spatial index offset records
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <strong>.dbf</strong>: dBASE table of feature attributes
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <strong>.prj</strong>: Coordinate system projection specification
+            </li>
           </ul>
         </Card>
 
         <Card className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[hsl(var(--foreground))]">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            Precise Metric Measurements
+          <div className="flex items-center gap-2 text-sm font-bold text-white">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            Geodesic Metric Precision
           </div>
-          <p className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">
-            All geometries are automatically converted from geographic coordinates into an optimal local projected coordinate reference system (UTM zone or equal-area projection) to compute geodesic metrics in standard SI units:
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Raw degrees from geographic systems (like WGS84) distort measurements. GeoMeasure automatically transforms datasets:
           </p>
-          <ul className="text-xs space-y-1.5 text-[hsl(var(--muted-foreground))] list-disc pl-4">
-            <li><strong>Polygons</strong>: Planar surface area (m², ha, km²)</li>
-            <li><strong>LineStrings</strong>: Cumulative curvilinear length (m, km)</li>
-            <li><strong>Points</strong>: Feature count and coordinates</li>
+          <ul className="text-xs space-y-2 text-slate-400 list-none">
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <strong>Polygons</strong>: Planar surface area (m², ha, km²)
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <strong>LineStrings</strong>: Exact curvilinear path length (m, km)
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <strong>Automatic UTM</strong>: Optimal meridian projection per feature
+            </li>
           </ul>
         </Card>
       </div>

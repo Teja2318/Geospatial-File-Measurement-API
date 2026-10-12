@@ -6,6 +6,7 @@ import {
   Laptop,
   Server,
   Check,
+  Sliders,
 } from 'lucide-react';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useHealth } from '@/hooks/useApi';
@@ -38,19 +39,23 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[hsl(var(--foreground))]">
+    <div className="p-6 md:p-10 space-y-8 max-w-4xl mx-auto">
+      <div className="flex items-center justify-between pb-2">
+        <div className="space-y-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider inline-flex items-center gap-1.5">
+            <Sliders className="w-3 h-3 text-cyan-400" />
+            Display Configuration
+          </span>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
             Preferences & Settings
           </h1>
-          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
-            Customize display units, user interface theme, and review system configuration
+          <p className="text-sm text-slate-400">
+            Customize display units, color schemes, and inspect backend geospatial service parameters
           </p>
         </div>
 
         {savedAlert && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold animate-fade">
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold animate-fade shadow-lg shadow-emerald-500/20">
             <Check className="w-4 h-4" />
             Preferences Saved
           </div>
@@ -59,22 +64,24 @@ export function SettingsPage() {
 
       {/* Unit Preferences */}
       <Card className="space-y-6">
-        <div className="flex items-center gap-2 pb-3 border-b border-[hsl(var(--border))]">
-          <Maximize2 className="w-5 h-5 text-[hsl(var(--primary))]" />
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+            <Maximize2 className="w-5 h-5" />
+          </div>
           <div>
-            <h2 className="text-base font-semibold text-[hsl(var(--foreground))]">
-              Measurement Units
+            <h2 className="text-base font-bold text-white">
+              Measurement Metric Units
             </h2>
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">
-              Choose default units for geometric measurements across tables, cards, and maps
+            <p className="text-xs text-slate-400">
+              Select preferred default units for planar area and curvilinear path lengths
             </p>
           </div>
         </div>
 
         {/* Area Units */}
         <div className="space-y-3">
-          <label className="text-xs font-semibold text-[hsl(var(--foreground))] uppercase tracking-wider">
-            Preferred Area Unit
+          <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            Preferred Planar Area Unit
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
@@ -88,19 +95,19 @@ export function SettingsPage() {
                 onClick={() => handleAreaUnitChange(option.id as AreaUnit)}
                 className={`p-4 rounded-xl border text-left transition-all ${
                   preferences.areaUnit === option.id
-                    ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/5 shadow-sm ring-1 ring-[hsl(var(--primary))]'
-                    : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]/50'
+                    ? 'border-cyan-400 bg-cyan-500/10 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-400/50'
+                    : 'border-slate-800 bg-slate-950/60 hover:bg-slate-900 hover:border-slate-700'
                 }`}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-sm text-[hsl(var(--foreground))]">
+                  <span className="font-bold text-sm text-white">
                     {option.label}
                   </span>
-                  <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]">
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">
                     {option.unit}
                   </span>
                 </div>
-                <p className="text-xs text-[hsl(var(--muted-foreground))]">{option.desc}</p>
+                <p className="text-xs text-slate-400">{option.desc}</p>
               </button>
             ))}
           </div>
@@ -108,13 +115,13 @@ export function SettingsPage() {
 
         {/* Length Units */}
         <div className="space-y-3 pt-2">
-          <label className="text-xs font-semibold text-[hsl(var(--foreground))] uppercase tracking-wider">
-            Preferred Length & Perimeter Unit
+          <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            Preferred Path Length & Perimeter Unit
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { id: 'm', label: 'Meters', unit: 'm', desc: 'Standard metric length' },
-              { id: 'km', label: 'Kilometers', unit: 'km', desc: '1 km = 1,000 m' },
+              { id: 'km', label: 'Kilometers', unit: 'km', desc: '1 km = 1,000 meters' },
             ].map((option) => (
               <button
                 key={option.id}
@@ -122,44 +129,46 @@ export function SettingsPage() {
                 onClick={() => handleLengthUnitChange(option.id as LengthUnit)}
                 className={`p-4 rounded-xl border text-left transition-all ${
                   preferences.lengthUnit === option.id
-                    ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/5 shadow-sm ring-1 ring-[hsl(var(--primary))]'
-                    : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]/50'
+                    ? 'border-cyan-400 bg-cyan-500/10 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-400/50'
+                    : 'border-slate-800 bg-slate-950/60 hover:bg-slate-900 hover:border-slate-700'
                 }`}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-sm text-[hsl(var(--foreground))]">
+                  <span className="font-bold text-sm text-white">
                     {option.label}
                   </span>
-                  <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]">
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-amber-400 border border-slate-700">
                     {option.unit}
                   </span>
                 </div>
-                <p className="text-xs text-[hsl(var(--muted-foreground))]">{option.desc}</p>
+                <p className="text-xs text-slate-400">{option.desc}</p>
               </button>
             ))}
           </div>
         </div>
       </Card>
 
-      {/* Theme Preferences */}
+      {/* Theme Modes */}
       <Card className="space-y-4">
-        <div className="flex items-center gap-2 pb-3 border-b border-[hsl(var(--border))]">
-          <Sun className="w-5 h-5 text-[hsl(var(--primary))]" />
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+            <Sun className="w-5 h-5" />
+          </div>
           <div>
-            <h2 className="text-base font-semibold text-[hsl(var(--foreground))]">
-              Appearance & Theme
+            <h2 className="text-base font-bold text-white">
+              Interface Theme
             </h2>
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">
-              Select your color preference for high-contrast viewing
+            <p className="text-xs text-slate-400">
+              High-contrast dark obsidian canvas optimized for GIS spatial clarity
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { id: 'system', label: 'System Default', icon: Laptop },
+            { id: 'system', label: 'System Automatic', icon: Laptop },
+            { id: 'dark', label: 'Dark Obsidian', icon: Moon },
             { id: 'light', label: 'Light Mode', icon: Sun },
-            { id: 'dark', label: 'Dark Mode', icon: Moon },
           ].map((item) => (
             <button
               key={item.id}
@@ -167,12 +176,12 @@ export function SettingsPage() {
               onClick={() => handleThemeChange(item.id as 'light' | 'dark' | 'system')}
               className={`p-4 rounded-xl border flex items-center gap-3 transition-all ${
                 preferences.theme === item.id
-                  ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/5 shadow-sm ring-1 ring-[hsl(var(--primary))]'
-                  : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]/50'
+                  ? 'border-indigo-500 bg-indigo-500/15 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/40'
+                  : 'border-slate-800 bg-slate-950/60 hover:bg-slate-900 hover:border-slate-700'
               }`}
             >
-              <item.icon className="w-5 h-5 text-[hsl(var(--primary))]" />
-              <span className="text-sm font-semibold text-[hsl(var(--foreground))]">
+              <item.icon className="w-5 h-5 text-indigo-400" />
+              <span className="text-sm font-semibold text-white">
                 {item.label}
               </span>
             </button>
@@ -180,47 +189,49 @@ export function SettingsPage() {
         </div>
       </Card>
 
-      {/* System Information & API Diagnostics */}
+      {/* System Diagnostics */}
       <Card className="space-y-4">
-        <div className="flex items-center gap-2 pb-3 border-b border-[hsl(var(--border))]">
-          <Server className="w-5 h-5 text-[hsl(var(--primary))]" />
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <Server className="w-5 h-5" />
+          </div>
           <div>
-            <h2 className="text-base font-semibold text-[hsl(var(--foreground))]">
-              System Diagnostics
+            <h2 className="text-base font-bold text-white">
+              System Service Diagnostics
             </h2>
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">
-              Backend API status and configuration parameters
+            <p className="text-xs text-slate-400">
+              Live FastAPI backend connectivity and runtime parameters
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="p-3.5 rounded-lg bg-[hsl(var(--muted))]/40 border border-[hsl(var(--border))] space-y-1">
-            <span className="text-[hsl(var(--muted-foreground))]">Backend Service:</span>
-            <div className="font-semibold text-sm flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${health?.status === 'healthy' ? 'bg-green-500' : 'bg-yellow-500'}`} />
-              {isHealthLoading ? 'Connecting...' : `${health?.service || 'GeoMeasure API'} (${health?.status || 'Active'})`}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span className="text-slate-400">Backend Service Engine:</span>
+            <div className="font-bold text-sm flex items-center gap-2 text-white">
+              <span className={`w-2.5 h-2.5 rounded-full ${health?.status === 'healthy' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-amber-400'}`} />
+              {isHealthLoading ? 'Connecting...' : `${health?.service || 'GeoMeasure API'} (${health?.status || 'Online'})`}
             </div>
           </div>
 
-          <div className="p-3.5 rounded-lg bg-[hsl(var(--muted))]/40 border border-[hsl(var(--border))] space-y-1">
-            <span className="text-[hsl(var(--muted-foreground))]">API Target URL:</span>
-            <div className="font-mono font-medium text-sm">
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span className="text-slate-400">API Gateway URL:</span>
+            <div className="font-mono font-bold text-sm text-cyan-400">
               {import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}
             </div>
           </div>
 
-          <div className="p-3.5 rounded-lg bg-[hsl(var(--muted))]/40 border border-[hsl(var(--border))] space-y-1">
-            <span className="text-[hsl(var(--muted-foreground))]">Supported Formats:</span>
-            <div className="font-semibold text-sm">
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span className="text-slate-400">Supported Formats:</span>
+            <div className="font-bold text-sm text-white">
               KML (.kml), ESRI Shapefile (.zip)
             </div>
           </div>
 
-          <div className="p-3.5 rounded-lg bg-[hsl(var(--muted))]/40 border border-[hsl(var(--border))] space-y-1">
-            <span className="text-[hsl(var(--muted-foreground))]">Max Upload Size:</span>
-            <div className="font-semibold text-sm">
-              50 MB (Synchronous in-memory parse)
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span className="text-slate-400">Upload Size Limit:</span>
+            <div className="font-bold text-sm text-white">
+              50 MB (In-memory synchronous parsing)
             </div>
           </div>
         </div>
